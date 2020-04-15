@@ -25,24 +25,27 @@ $(function () {
 							.humanize();
 					}
 
-					$("#print_ETA").html(duration_remaining);
-					// $("#print_state").html((STATES[data.status.state] || "Disconnected").toLowerCase().trim());
-					// $("#print_remaining").html(duration_remaining);
-					// $("#print_elapsed").html(duration_elapsed);
-					// $("#tool0_actual").html(data.printer.temperature.tool0.actual);
-					// $("#tool0_target").html(data.printer.temperature.tool0.target);
-					// $("#bed_actual").html(data.printer.temperature.bed.actual);
-					// $("#bed_target").html(data.printer.temperature.bed.target);
+					var unix_timestamp = Date.now();
+					var today = new Date(
+						unix_timestamp + data.status.progress.printTimeLeft * 1000
+					);
+					var h = today.getHours();
+					var m = today.getMinutes();
+					var s = today.getSeconds();
+					// add a zero in front of numbers<10
+					m = checkTime(m);
+					s = checkTime(s);
 
-					// if(data.status.job.file && data.status.job.file.name) {
-					// 	$(".file").removeClass("hidden");
-					// 	let fileName = data.status.job.file.name.replace(/^API3_/i, "").toLowerCase().trim();
-					// 	$("#print_file").html(fileName);
-					// } else {
-					// 	$(".file").addClass("hidden");
-					// }
+					$("#print_ETA").html(h + ":" + m + ":" + s);
 				}
 			},
 		});
 	}, 1000);
 });
+
+function checkTime(i) {
+	if (i < 10) {
+		i = "0" + i;
+	}
+	return i;
+}
