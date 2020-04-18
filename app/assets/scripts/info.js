@@ -1,30 +1,32 @@
 "use strict";
-$(function() {
-	setInterval(function() {
+$(function () {
+	setInterval(function () {
 		let STATES = {
 			Operational: "Idle",
-			Printing: "Printing"
+			Printing: "Drucke",
 		};
 		$.ajax("/api/job", {
 			success: (data, text, xhr) => {
 				if (data.status && data.status.job && data.status.progress) {
 					let format =
-						data.status.progress.printTime <= 90 ? "seconds" : "minutes";
+						data.status.progress.printTime <= 90 ? "Sekunden" : "Minuten";
 					let duration_elapsed = moment
 						.duration({ seconds: data.status.progress.printTime }, format)
 						.humanize();
 					let duration_remaining =
 						STATES[data.status.state] === STATES.Operational
-							? "complete"
-							: "calculating...";
+							? "Fertig"
+							: "berechne...";
 					if (data.status.progress.printTimeLeft) {
 						let format =
-							data.status.progress.printTimeLeft <= 90 ? "seconds" : "minutes";
+							data.status.progress.printTimeLeft <= 90 ? "Sekunden" : "Minuten";
 						duration_remaining = moment
 							.duration({ seconds: data.status.progress.printTimeLeft }, format)
 							.humanize();
 					}
-					$("#print_state").html((STATES[data.status.state] || "Disconnected").toLowerCase().trim());
+					$("#print_state").html(
+						(STATES[data.status.state] || "Disconnected").toLowerCase().trim()
+					);
 					$("#print_remaining").html(duration_remaining);
 					$("#print_elapsed").html(duration_elapsed);
 					$("#tool0_actual").html(data.printer.temperature.tool0.actual);
@@ -32,15 +34,18 @@ $(function() {
 					$("#bed_actual").html(data.printer.temperature.bed.actual);
 					$("#bed_target").html(data.printer.temperature.bed.target);
 
-					if(data.status.job.file && data.status.job.file.name) {
+					if (data.status.job.file && data.status.job.file.name) {
 						$(".file").removeClass("hidden");
-						let fileName = data.status.job.file.name.replace(/^API3_/i, "").toLowerCase().trim();
+						let fileName = data.status.job.file.name
+							.replace(/^API3_/i, "")
+							.toLowerCase()
+							.trim();
 						$("#print_file").html(fileName);
 					} else {
 						$(".file").addClass("hidden");
 					}
 				}
-			}
+			},
 		});
 	}, 1000);
 });
